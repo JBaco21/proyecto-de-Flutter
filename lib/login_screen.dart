@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'registration_screen.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -25,12 +26,23 @@ class _LoginScreenState extends State<LoginScreen> {
       // Simular una operación asincrónica
       await Future.delayed(const Duration(seconds: 2));
       if (!mounted) return; // Verificar si el widget está montado antes de usar BuildContext
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(email: _emailController.text),
-        ),
-      );
+
+      final email = _emailController.text;
+      final password = _passwordController.text;
+
+      // Validación de credenciales
+      if (email == 'usuario@institucion.edu.hn' && password == '12345678') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(email: email),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Credenciales incorrectas')),
+        );
+      }
     }
   }
 
@@ -59,8 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa tu email';
+                  if (value == null || !RegExp(r'^[a-zA-Z0-9._%+-]+@institucion\.edu\.hn$').hasMatch(value)) {
+                    return 'Ingrese un correo válido que termine en .edu.hn';
                   }
                   return null;
                 },
@@ -70,8 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa tu contraseña';
+                  if (value == null || value.length < 8) {
+                    return 'La contraseña debe tener al menos 8 caracteres';
                   }
                   return null;
                 },
@@ -90,24 +102,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  final String email;
-
-  const HomeScreen({Key? key, required this.email}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(
-        child: Text('Bienvenido $email'),
       ),
     );
   }
