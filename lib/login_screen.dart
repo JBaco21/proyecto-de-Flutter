@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final password = _passwordController.text;
 
       // Validación de credenciales
-      if (email == 'usuario@institucion.edu.hn' && password == '12345678') {
+      if (email == 'usuario@unah.edu.hn' && password == '12345678') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -71,8 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
-                  if (value == null || !RegExp(r'^[a-zA-Z0-9._%+-]+@institucion\.edu\.hn$').hasMatch(value)) {
-                    return 'Ingrese un correo válido que termine en .edu.hn';
+                  if (value == null || !RegExp(r'^[^@]+@unah\.edu\.hn$').hasMatch(value)) {
+                    return 'Ingrese un correo válido que termine en @unah.edu.hn';
                   }
                   return null;
                 },
@@ -106,3 +106,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

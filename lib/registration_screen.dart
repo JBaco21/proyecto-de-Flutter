@@ -68,8 +68,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
-                  if (value == null || !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value) || !value.endsWith('.edu.hn')) {
-                    return 'Por favor ingresa un email válido que termine en .edu.hn';
+                  if (value == null || !RegExp(r'^[^@]+@unah\.edu\.hn$').hasMatch(value)) {
+                    return 'Por favor ingresa un email válido que termine en @unah.edu.hn';
                   }
                   return null;
                 },
@@ -148,3 +148,4 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 }
+
