@@ -14,8 +14,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  bool _obscurePasswordText = true;
+  bool _obscureConfirmPasswordText = true;
 
   @override
   void dispose() {
@@ -89,21 +89,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               TextFormField(
                 controller: _passwordController,
+                obscureText: _obscurePasswordText,
                 decoration: InputDecoration(
                   labelText: 'Contraseña',
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      _obscurePasswordText ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscurePassword = !_obscurePassword;
+                        _obscurePasswordText = !_obscurePasswordText;
                       });
                     },
                   ),
                 ),
-                obscureText: _obscurePassword,
                 validator: (value) {
                   if (value == null || value.length < 8 || !RegExp(r'^(?=.*[A-Z])(?=.*\W).+$').hasMatch(value)) {
                     return 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial';
@@ -113,21 +113,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               TextFormField(
                 controller: _confirmPasswordController,
+                obscureText: _obscureConfirmPasswordText,
                 decoration: InputDecoration(
                   labelText: 'Confirmar Contraseña',
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                      _obscureConfirmPasswordText ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                        _obscureConfirmPasswordText = !_obscureConfirmPasswordText;
                       });
                     },
                   ),
                 ),
-                obscureText: _obscureConfirmPassword,
                 validator: (value) {
                   if (value != _passwordController.text) {
                     return 'Las contraseñas no coinciden';

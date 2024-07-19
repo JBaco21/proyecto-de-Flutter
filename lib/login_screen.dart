@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'registration_screen.dart';
+// Elimina el import si no se usa: import 'registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  bool _obscurePasswordText = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -23,25 +24,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
       // Simular una operación asincrónica
       await Future.delayed(const Duration(seconds: 2));
       if (!mounted) return; // Verificar si el widget está montado antes de usar BuildContext
-      Navigator.pushReplacement(
+
+      Navigator.pushReplacementNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(email: _emailController.text),
-        ),
+        '/home',
+        arguments: _emailController.text,
       );
+
+      setState(() {
+        _isLoading = false; // Restablecer el estado de carga
+      });
     }
   }
 
   void _navigateToRegister() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RegistrationScreen(),
-      ),
-    );
+    Navigator.pushNamed(context, '/register');
   }
 
   @override
@@ -52,79 +56,63 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa tu email';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return 'Por favor ingresa un email válido';
+                        }
+                        return null;
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePasswordText ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePasswordText = !_obscurePasswordText;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: _obscurePasswordText,
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value.length < 6) {
+                          return 'La contraseña debe tener al menos 6 caracteres';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: _login,
+                      icon: const Icon(Icons.login),
+                      label: const Text('Login'),
+                    ),
+                    TextButton.icon(
+                      onPressed: _navigateToRegister,
+                      icon: const Icon(Icons.person_add),
+                      label: const Text('Registrarse'),
+                    ),
+                  ],
                 ),
-                obscureText: _obscurePassword,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa tu contraseña';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: _login,
-                icon: const Icon(Icons.login),
-                label: const Text('Login'),
-              ),
-              TextButton.icon(
-                onPressed: _navigateToRegister,
-                icon: const Icon(Icons.person_add),
-                label: const Text('Registrarse'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  final String email;
-
-  const HomeScreen({Key? key, required this.email}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(
-        child: Text('Bienvenido $email'),
       ),
     );
   }
