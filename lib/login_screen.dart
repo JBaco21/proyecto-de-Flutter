@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Iniciar sesión'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Correo electrónico'),
                 validator: (value) {
                   if (value == null || !RegExp(r'^[^@]+@unah\.edu\.hn$').hasMatch(value)) {
                     return 'Ingrese un correo válido que termine en @unah.edu.hn';
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Contraseña'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.length < 8) {
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton.icon(
                 onPressed: _login,
                 icon: const Icon(Icons.login),
-                label: const Text('Login'),
+                label: const Text('Iniciar sesión'),
               ),
               TextButton.icon(
                 onPressed: _navigateToRegister,
