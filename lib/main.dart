@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key); // Añadiendo el parámetro key
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginScreen(), // Usando const para mejorar el rendimiento
+      home: const LoginScreen(),
     );
   }
 }
