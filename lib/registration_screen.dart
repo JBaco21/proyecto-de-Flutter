@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logger/logger.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({Key? key}) : super(key: key);
+  const RegistrationScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
@@ -18,7 +18,42 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  final _logger = Logger();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      final name = _nameController.text;
+      final phone = _phoneController.text;
+      final email = _emailController.text;
+      final password = _passwordController.text;
+
+      // Guardar datos en SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('name', name);
+      await prefs.setString('phone', phone);
+      await prefs.setString('email', email);
+      await prefs.setString('password', password);
+
+      // Mostrar mensaje de éxito
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registro exitoso')),
+      );
+
+      // Navegar a la pantalla de inicio de sesión
+      // ignore: use_build_context_synchronously
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,54 +69,52 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nombre',
-                  prefixIcon: const Icon(Icons.person, color: Colors.blue), // Color azul
+                  prefixIcon: Icon(Icons.person, color: Colors.blue),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingrese su nombre';
+                    return 'Por favor ingrese su nombre';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(
-                  labelText: 'Número de Teléfono',
-                  prefixIcon: const Icon(Icons.phone, color: Colors.green), // Color verde
+                decoration: const InputDecoration(
+                  labelText: 'Número de teléfono',
+                  prefixIcon: Icon(Icons.phone, color: Colors.green),
                 ),
-                keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingrese su número de teléfono';
+                    return 'Por favor ingrese su número de teléfono';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Correo electrónico',
-                  prefixIcon: const Icon(Icons.email, color: Colors.red), // Color rojo
+                  prefixIcon: Icon(Icons.email, color: Colors.red),
                 ),
                 validator: (value) {
                   if (value == null || !RegExp(r'^[a-zA-Z0-9._%+-]+@unah\.edu\.hn$').hasMatch(value)) {
-                    return 'Ingrese un correo válido que termine en .unah.edu.hn';
+                    return 'Ingrese un correo válido que termine en @unah.edu.hn';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _passwordController,
-                obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  prefixIcon: const Icon(Icons.lock, color: Colors.orange), // Color naranja
+                  prefixIcon: const Icon(Icons.lock, color: Colors.orange),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                      color: Colors.black, // Color negro para el icono de visibilidad
+                      color: Colors.black,
                     ),
                     onPressed: () {
                       setState(() {
@@ -90,6 +123,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     },
                   ),
                 ),
+                obscureText: _obscurePassword,
                 validator: (value) {
                   if (value == null || value.length < 8) {
                     return 'La contraseña debe tener al menos 8 caracteres';
@@ -99,14 +133,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               TextFormField(
                 controller: _confirmPasswordController,
-                obscureText: _obscureConfirmPassword,
                 decoration: InputDecoration(
-                  labelText: 'Confirmar Contraseña',
-                  prefixIcon: const Icon(Icons.lock, color: Colors.orange), // Color naranja
+                  labelText: 'Confirmar contraseña',
+                  prefixIcon: const Icon(Icons.lock, color: Colors.orange),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                      color: Colors.black, // Color negro para el icono de visibilidad
+                      color: Colors.black,
                     ),
                     onPressed: () {
                       setState(() {
@@ -115,51 +148,23 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     },
                   ),
                 ),
+                obscureText: _obscureConfirmPassword,
                 validator: (value) {
-                  if (value != _passwordController.text) {
+                  if (value == null || value != _passwordController.text) {
                     return 'Las contraseñas no coinciden';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-              ElevatedButton.icon(
+              ElevatedButton(
                 onPressed: _register,
-                icon: const Icon(Icons.person_add, color: Colors.black), // Color negro
-                label: const Text('Registrar'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Volver a Iniciar Sesión'),
+                child: const Text('Registrar'),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Future<void> _register() async {
-    if (_formKey.currentState!.validate()) {
-      await Future.delayed(const Duration(seconds: 2));
-      if (!mounted) return; // Verificar si el widget está montado
-
-      final email = _emailController.text;
-      final password = _passwordController.text;
-      final name = _nameController.text;
-      final phone = _phoneController.text;
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('email', email);
-      await prefs.setString('password', password);
-      await prefs.setString('name', name);
-      await prefs.setString('phone', phone);
-
-      _logger.i('Usuario registrado: $email');
-
-      Navigator.pop(context);
-    }
   }
 }

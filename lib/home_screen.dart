@@ -6,6 +6,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.email});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
