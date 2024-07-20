@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'registration_screen.dart';
 import 'home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -23,15 +24,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      // Simular una operación asincrónica
-      await Future.delayed(const Duration(seconds: 2));
-      if (!mounted) return; // Verificar si el widget está montado antes de usar BuildContext
+      final prefs = await SharedPreferences.getInstance();
+      final storedEmail = prefs.getString('email') ?? '';
+      final storedPassword = prefs.getString('password') ?? '';
 
       final email = _emailController.text;
       final password = _passwordController.text;
 
       // Validación de credenciales
-      if (email == 'usuario@unah.edu.hn' && password == '12345678') {
+      if (email == storedEmail && password == storedPassword) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

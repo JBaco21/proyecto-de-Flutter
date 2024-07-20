@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -27,12 +28,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  void _register() {
+  Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
-      print('Name: ${_nameController.text}');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('name', _nameController.text);
+      await prefs.setString('email', _emailController.text);
+      await prefs.setString('phone', _phoneController.text);
+      await prefs.setString('password', _passwordController.text);
+
+      print('Nombre: ${_nameController.text}');
       print('Email: ${_emailController.text}');
-      print('Phone: ${_phoneController.text}');
-      print('Password: ${_passwordController.text}');
+      print('Teléfono: ${_phoneController.text}');
+      print('Contraseña: ${_passwordController.text}');
+
+      // Opcional: Navegar a la pantalla de inicio de sesión después del registro
+      Navigator.pop(context);
     }
   }
 
