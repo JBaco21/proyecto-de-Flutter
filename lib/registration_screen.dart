@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logger/logger.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -11,40 +12,13 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePasswordText = true;
-  bool _obscureConfirmPasswordText = true;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _register() async {
-    if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('name', _nameController.text);
-      await prefs.setString('email', _emailController.text);
-      await prefs.setString('phone', _phoneController.text);
-      await prefs.setString('password', _passwordController.text);
-
-      print('Nombre: ${_nameController.text}');
-      print('Email: ${_emailController.text}');
-      print('Teléfono: ${_phoneController.text}');
-      print('Contraseña: ${_passwordController.text}');
-
-      // Opcional: Navegar a la pantalla de inicio de sesión después del registro
-      Navigator.pop(context);
-    }
-  }
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  final _logger = Logger();
 
   @override
   Widget build(BuildContext context) {
@@ -60,80 +34,83 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Nombre',
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: const Icon(Icons.person, color: Colors.blue), // Color azul
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty || value.length < 3 || value.length > 10) {
-                    return 'El nombre debe tener entre 3 y 10 caracteres';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                ),
-                validator: (value) {
-                  if (value == null || !RegExp(r'^[^@]+@unah\.edu\.hn$').hasMatch(value)) {
-                    return 'Por favor ingresa un email válido que termine en @unah.edu.hn';
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese su nombre';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono',
-                  prefixIcon: Icon(Icons.phone),
+                decoration: InputDecoration(
+                  labelText: 'Número de Teléfono',
+                  prefixIcon: const Icon(Icons.phone, color: Colors.green), // Color verde
+                ),
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese su número de teléfono';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Correo electrónico',
+                  prefixIcon: const Icon(Icons.email, color: Colors.red), // Color rojo
                 ),
                 validator: (value) {
-                  if (value == null || value.length != 8 || !(value.startsWith('3') || value.startsWith('9'))) {
-                    return 'El teléfono debe tener 8 dígitos y empezar con 3 o 9';
+                  if (value == null || !RegExp(r'^[a-zA-Z0-9._%+-]+@unah\.edu\.hn$').hasMatch(value)) {
+                    return 'Ingrese un correo válido que termine en .unah.edu.hn';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _passwordController,
-                obscureText: _obscurePasswordText,
+                obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  prefixIcon: const Icon(Icons.lock),
+                  prefixIcon: const Icon(Icons.lock, color: Colors.orange), // Color naranja
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePasswordText ? Icons.visibility : Icons.visibility_off,
+                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.black, // Color negro para el icono de visibilidad
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscurePasswordText = !_obscurePasswordText;
+                        _obscurePassword = !_obscurePassword;
                       });
                     },
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.length < 8 || !RegExp(r'^(?=.*[A-Z])(?=.*\W).+$').hasMatch(value)) {
-                    return 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial';
+                  if (value == null || value.length < 8) {
+                    return 'La contraseña debe tener al menos 8 caracteres';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _confirmPasswordController,
-                obscureText: _obscureConfirmPasswordText,
+                obscureText: _obscureConfirmPassword,
                 decoration: InputDecoration(
                   labelText: 'Confirmar Contraseña',
-                  prefixIcon: const Icon(Icons.lock),
+                  prefixIcon: const Icon(Icons.lock, color: Colors.orange), // Color naranja
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureConfirmPasswordText ? Icons.visibility : Icons.visibility_off,
+                      _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.black, // Color negro para el icono de visibilidad
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscureConfirmPasswordText = !_obscureConfirmPasswordText;
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
                       });
                     },
                   ),
@@ -148,8 +125,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: _register,
-                icon: const Icon(Icons.save),
+                icon: const Icon(Icons.person_add, color: Colors.black), // Color negro
                 label: const Text('Registrar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Volver a Iniciar Sesión'),
               ),
             ],
           ),
@@ -157,5 +140,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
     );
   }
-}
 
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return; // Verificar si el widget está montado
+
+      final email = _emailController.text;
+      final password = _passwordController.text;
+      final name = _nameController.text;
+      final phone = _phoneController.text;
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('email', email);
+      await prefs.setString('password', password);
+      await prefs.setString('name', name);
+      await prefs.setString('phone', phone);
+
+      _logger.i('Usuario registrado: $email');
+
+      Navigator.pop(context);
+    }
+  }
+}

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'registration_screen.dart';
 import 'home_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -24,15 +23,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
-      final storedEmail = prefs.getString('email') ?? '';
-      final storedPassword = prefs.getString('password') ?? '';
+      // Simular una operación asincrónica
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return; // Verificar si el widget está montado antes de usar BuildContext
 
       final email = _emailController.text;
       final password = _passwordController.text;
 
       // Validación de credenciales
-      if (email == storedEmail && password == storedPassword) {
+      if (email == 'usuario@unah.edu.hn' && password == '12345678') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -41,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Credenciales incorrectas')),
+          SnackBar(content: const Text('Credenciales incorrectas')),
         );
       }
     }
@@ -70,17 +69,21 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Correo electrónico'),
+                decoration: const InputDecoration(
+                  labelText: 'Correo electrónico',
+                ),
                 validator: (value) {
-                  if (value == null || !RegExp(r'^[^@]+@unah\.edu\.hn$').hasMatch(value)) {
-                    return 'Ingrese un correo válido que termine en @unah.edu.hn';
+                  if (value == null || !RegExp(r'^[a-zA-Z0-9._%+-]+@unah\.edu\.hn$').hasMatch(value)) {
+                    return 'Ingrese un correo válido que termine en .unah.edu.hn';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Contraseña'),
+                decoration: const InputDecoration(
+                  labelText: 'Contraseña',
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.length < 8) {
@@ -107,4 +110,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
