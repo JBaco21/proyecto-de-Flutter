@@ -69,8 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Correo electrónico',
+                  prefixIcon: Icon(Icons.email, color: Colors.blue), // Ícono azul
                 ),
                 validator: (value) {
                   if (value == null || !RegExp(r'^[a-zA-Z0-9._%+-]+@unah\.edu\.hn$').hasMatch(value)) {
@@ -81,8 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contraseña',
+                  prefixIcon: Icon(Icons.lock, color: Colors.red), // Ícono rojo
                 ),
                 obscureText: true,
                 validator: (value) {
